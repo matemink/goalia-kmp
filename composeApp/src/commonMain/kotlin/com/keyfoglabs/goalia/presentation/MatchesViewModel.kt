@@ -8,13 +8,15 @@ import com.keyfoglabs.goalia.data.MatchOutcome
 import com.keyfoglabs.goalia.data.Winner
 import com.keyfoglabs.goalia.mapper.toMatchUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MatchesViewModel(
     private val api: FootballDataApi = FootballDataApi()
 ) : ViewModel() {
 
-    val state = MutableStateFlow(MatchesUiState())
+    val state: StateFlow<MatchesUiState>
+        field = MutableStateFlow(MatchesUiState())
 
     init {
         refresh()
