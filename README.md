@@ -4,6 +4,17 @@
 
 Kotlin Multiplatform client for football match predictions. The shared Compose UI runs on Android and iOS and consumes the separate [Goalia backend](https://github.com/matemink/goalia-backend).
 
+## Architecture
+
+<a href="https://matemink.github.io/goalia-kmp/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/overview-dark.svg">
+    <img alt="Android and iOS entry points, shared Compose UI, ViewModel state and Ktor requests to Goalia backend" src="docs/diagrams/overview-light.svg" width="960">
+  </picture>
+</a>
+
+[Explore the interactive map](https://matemink.github.io/goalia-kmp/) · [Diagram source and refresh guide](docs/diagrams/README.md)
+
 ## Features
 
 - Displays scheduled and completed matches in a scrollable list.

@@ -2,3 +2,7 @@
 *.bat text eol=crlf
 *.jar binary
 *.png binary
+
+# Canonical documentation exports; review the source JSON.
+docs/diagrams/overview.html linguist-generated
+docs/diagrams/overview-*.svg linguist-generated
