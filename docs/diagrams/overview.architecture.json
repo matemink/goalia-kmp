@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Goalia · Shared client architecture",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "output": "docs/diagrams/overview.html",
+    "repository": {
+      "url": "https://github.com/matemink/goalia-kmp.git",
+      "revision": "be347254458d51025be0f5259e10096bf38ef10d",
+      "provider": "github",
+      "link_mode": "web"
+    }
+  },
+  "components": [
+    {
+      "id": "platforms",
+      "type": "frontend",
+      "label": "Android + iOS",
+      "sublabel": "Platform entry points",
+      "pos": [
+        40,
+        100
+      ],
+      "size": [
+        220,
+        80
+      ],
+      "sources": [
+        {
+          "path": "composeApp/src/androidMain/kotlin/com/keyfoglabs/goalia/MainActivity.kt",
+          "line": 11,
+          "end_line": 22
+        },
+        {
+          "path": "composeApp/src/iosMain/kotlin/com/keyfoglabs/goalia/MainViewController.kt",
+          "line": 1,
+          "end_line": 4
+        }
+      ]
+    },
+    {
+      "id": "screen",
+      "type": "frontend",
+      "label": "Shared Compose UI",
+      "sublabel": "MatchesScreen + match cards",
+      "pos": [
+        440,
+        100
+      ],
+      "size": [
+        220,
+        80
+      ],
+      "sources": [
+        {
+          "path": "composeApp/src/commonMain/kotlin/com/keyfoglabs/goalia/GoaliaApp.kt",
+          "line": 19,
+          "end_line": 23
+        },
+        {
+          "path": "composeApp/src/commonMain/kotlin/com/keyfoglabs/goalia/ui/MatchesScreen.kt",
+          "line": 42,
+          "end_line": 126
+        },
+        {
+          "path": "composeApp/src/commonMain/kotlin/com/keyfoglabs/goalia/ui/MatchCard.kt",
+          "line": 41,
+          "end_line": 106
+        }
+      ]
+    },
+    {
+      "id": "viewmodel",
+      "type": "backend",
+      "label": "MatchesViewModel",
+      "sublabel": "Refresh, grouping + accuracy",
+      "pos": [
+        840,
+        100
+      ],
+      "size": [
+        240,
+        88
+      ],
+      "sources": [
+        {
+          "path": "composeApp/src/commonMain/kotlin/com/keyfoglabs/goalia/presentation/MatchesViewModel.kt",
+          "line": 14,
+          "end_line": 55
+        },
+        {
+          "path": "composeApp/src/commonMain/kotlin/com/keyfoglabs/goalia/presentation/MatchesViewModel.kt",
+          "line": 61,
+          "end_line": 107
+        },
+        {
+          "path": "composeApp/src/commonMain/kotlin/com/keyfoglabs/goalia/mapper/toMatchUiModel.kt",
+          "line": 10,
+          "end_line": 51
+        }
+      ]
+    },
+    {
+      "id": "http",
+      "type": "backend",
+      "label": "Ktor API client",
+      "sublabel": "JSON → MatchDto",
+      "pos": [
+        850,
+        380
+      ],
+      "size": [
+        220,
+        80
+      ],
+      "sources": [
+        {
+          "path": "composeApp/src/commonMain/kotlin/com/keyfoglabs/goalia/data/FootballDataApi.kt",
+          "line": 7,
+          "end_line": 20
+        },
+        {
+          "path": "composeApp/src/androidMain/kotlin/com/keyfoglabs/goalia/network/HttpClientFactory.kt",
+          "line": 9,
+          "end_line": 23
+        },
+        {
+          "path": "composeApp/src/iosMain/kotlin/com/keyfoglabs/goalia/network/HttpClientFactory.kt",
+          "line": 8,
+          "end_line": 22
+        }
+      ]
+    },
+    {
+      "id": "backend",
+      "type": "external",
+      "label": "Goalia backend",
+      "sublabel": "GET /api/matches · JSON",
+      "pos": [
+        440,
+        380
+      ],
+      "size": [
+        220,
+        80
+      ],
+      "sources": [
+        {
+          "path": "composeApp/src/commonMain/kotlin/com/keyfoglabs/goalia/data/FootballDataApi.kt",
+          "line": 10,
+          "end_line": 20
+        },
+        {
+          "path": "composeApp/src/commonMain/kotlin/com/keyfoglabs/goalia/data/MatchesResponse.kt",
+          "line": 1,
+          "end_line": 16
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "start-shared-ui",
+      "from": "platforms",
+      "to": "screen",
+      "label": "GoaliaApp"
+    },
+    {
+      "id": "refresh-matches",
+      "from": "screen",
+      "to": "viewmodel",
+      "label": "Refresh / retry",
+      "variant": "emphasis"
+    },
+    {
+      "id": "observe-state",
+      "from": "viewmodel",
+      "to": "screen",
+      "label": "StateFlow",
+      "fromSide": "top",
+      "toSide": "top"
+    },
+    {
+      "id": "load-matches",
+      "from": "viewmodel",
+      "to": "http",
+      "label": "getMatches"
+    },
+    {
+      "id": "request-api",
+      "from": "http",
+      "to": "backend",
+      "label": "HTTPS"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "One shared interface",
+      "items": [
+        "Android and iOS both enter GoaliaApp.",
+        "Loading, empty, error and refresh states are rendered in Compose."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Data and presentation",
+      "items": [
+        "ViewModel maps DTOs, groups leagues and calculates completed-match accuracy.",
+        "Coil loads team and competition logos from URLs in the response."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Platform networking",
+      "items": [
+        "Android uses OkHttp; iOS uses Darwin.",
+        "Both clients configure 30-second timeouts and JSON deserialization."
+      ]
+    }
+  ]
+}
